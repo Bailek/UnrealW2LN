@@ -15,7 +15,7 @@ public:
 	// Sets default values for this actor's properties
 	AEffectZone();
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float amoutLifeModifier;
 
 private:

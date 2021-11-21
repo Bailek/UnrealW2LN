@@ -55,6 +55,7 @@ void AEffectZone::takeModifierLife(class AActor* OtherActor)
 		return;
 	AMyProjectCharacter* Player = Cast<AMyProjectCharacter>(OtherActor);
 	Player->LifeModifier(amoutLifeModifier);
+	std::cout << "Player life is " << Player->currentHP << std::endl;
 	//delay 0,5 second = 500 ms GetWorldTimerManager().SetTimer(HarvestTimerHandle, this, &ACubeFarmBlock::Harvest, HarvestTime,false);
 
 	checkModifierLife(Character);

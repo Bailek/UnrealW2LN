@@ -31,7 +31,7 @@ public:
 
 	//Life PLayer
 	UPROPERTY(VisibleAnywhere)
-		float maxHP;
+		float maxHP = 100;
 	
 		float currentHP;
 
