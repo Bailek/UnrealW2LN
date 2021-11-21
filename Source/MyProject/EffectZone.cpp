@@ -12,21 +12,20 @@ AEffectZone::AEffectZone()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> PlaneMesh(TEXT("StaticMesh'/Engine/BasicShapes/Plane'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> PlaneMesh(TEXT("StaticMesh'/Game/Geometry/Meshes/1M_Cube.1M_Cube'"));
 
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("NomMesh"));
-
+	TrigerBox = CreateDefaultSubobject<UBoxComponent>(TEXT("NomTriger"));
 	if (PlaneMesh.Succeeded())
 	{
 		StaticMesh->SetStaticMesh(PlaneMesh.Object);
 	}
 
-	StaticMesh->SetSimulatePhysics(true);
-	/*
-	// declare overlap events
-	TriggerCapsule->OnComponentBeginOverlap.AddDynamic(this, &AUnrealCPPCharacter::OnOverlapBegin);
-	TriggerCapsule->OnComponentEndOverlap.AddDynamic(this, &AUnrealCPPCharacter::OnOverlapEnd);
-	*/
+	StaticMesh->SetSimulatePhysics(false);
+	TrigerBox->SetCollisionProfileName(TEXT("Trigger"), true);
+	
+	TrigerBox->OnComponentBeginOverlap.AddDynamic(this, &AEffectZone::OnOverlapBegin);
+	
 	RootComponent = StaticMesh;
 }
 
@@ -39,7 +38,8 @@ void AEffectZone::BeginPlay()
 
 void AEffectZone::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) 
 {
-	
+	AMyProjectCharacter* Player = Cast<AMyProjectCharacter>(OtherActor);
+	Player->Death();
 	ACharacter* Character = Cast<ACharacter>(OtherActor);
 	
 	if (Character == nullptr)
@@ -57,7 +57,7 @@ void AEffectZone::takeModifierLife(class AActor* OtherActor)
 	Player->LifeModifier(amoutLifeModifier);
 	std::cout << "Player life is " << Player->currentHP << std::endl;
 	//delay 0,5 second = 500 ms GetWorldTimerManager().SetTimer(HarvestTimerHandle, this, &ACubeFarmBlock::Harvest, HarvestTime,false);
-
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDele, 0.5f, false);
 	checkModifierLife(Character);
 }
 

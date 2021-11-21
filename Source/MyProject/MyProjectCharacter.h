@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "TimerManager.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "MyProjectCharacter.generated.h"
@@ -35,12 +36,26 @@ public:
 	
 		float currentHP;
 
+		AActor* DragObject;
 	// fonction LifeModifier
 	void LifeModifier(float amout);
 
-private:
+	FTimerHandle RespawnHandle;
+
+	FTimerDelegate RespawnDele;
 
 	void Death();
+private:
+
+	void Respawn();
+
+	void PickUp();
+
+	void UnPickUp();
+
+	void CreateProjectile();
+
+	void Shooting();
 
 protected:
 
@@ -84,5 +99,6 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
 };
 

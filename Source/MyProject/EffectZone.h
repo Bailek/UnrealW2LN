@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "Components/BoxComponent.h"
+#include "TimerManager.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "EffectZone.generated.h"
@@ -18,6 +20,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float amoutLifeModifier;
 
+	FTimerHandle TimerHandle;
+
+	FTimerDelegate TimerDele;
 private:
 	void checkModifierLife(class AActor* OtherActor);
 	void takeModifierLife(class AActor* OtherActor);
@@ -41,4 +46,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		UStaticMeshComponent* StaticMesh;
+	UPROPERTY(VisibleAnywhere)
+		UBoxComponent* TrigerBox;
 };

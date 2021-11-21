@@ -8,7 +8,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
-
+#include "GameFramework/Actor.h"
 //////////////////////////////////////////////////////////////////////////
 // AMyProjectCharacter
 
@@ -57,6 +57,9 @@ void AMyProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 	check(PlayerInputComponent);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+
+	PlayerInputComponent->BindAction("Drag", IE_Pressed, this, &AMyProjectCharacter::PickUp);
+	PlayerInputComponent->BindAction("Drag", IE_Released, this, &AMyProjectCharacter::UnPickUp);
 	/*
 	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &ACharacter::OnCrouch);
 	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &ACharacter::OnUncrouch);
@@ -182,5 +185,46 @@ void AMyProjectCharacter::LifeModifier(float amout)
 
 void AMyProjectCharacter::Death() 
 {
+	GetController()->UnPossess();
+	Respawn();
+}
 
+
+void AMyProjectCharacter::Respawn()
+{
+	GetWorld()->GetTimerManager().SetTimer(RespawnHandle, RespawnDele, 2.0f, false);
+	APawn* Pawn = GetWorld()->SpawnActor<APawn>(AMyProjectCharacter::StaticClass(), FVector(-770, 370, 226), FRotator(0,0,0));
+	GetController()->Possess(Pawn);
+}
+
+void AMyProjectCharacter::PickUp()
+{
+	FHitResult Hit;
+	FVector Start = GetCapsuleComponent()->GetComponentLocation();
+	FVector End = Start + (GetCapsuleComponent()->GetForwardVector() * 700.f);
+	FCollisionQueryParams CollisionParams;
+
+	GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, CollisionParams);
+
+	if (Hit.GetComponent()->Mobility == EComponentMobility::Movable)
+	{
+		DragObject = Hit.GetActor();
+		DragObject->AttachToComponent(GetCapsuleComponent(),FAttachmentTransformRules::KeepWorldTransform);
+	}
+}
+void AMyProjectCharacter::UnPickUp()
+{
+	if (!DragObject) 
+	{
+		DragObject->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	}
+}
+void AMyProjectCharacter::CreateProjectile()
+{
+	//GetWorld()->SpawnActor<FSphere>(AProjectile, FVector(-770, 370, 226), FRotator(0, 0, 0));
+}
+
+void AMyProjectCharacter::Shooting()
+{
+	
 }
