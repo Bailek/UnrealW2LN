@@ -43,6 +43,7 @@ AMyProjectCharacter::AMyProjectCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
+
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 }
@@ -56,10 +57,10 @@ void AMyProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 	check(PlayerInputComponent);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-
+	/*
 	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &ACharacter::OnCrouch);
 	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &ACharacter::OnUncrouch);
-
+	*/
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMyProjectCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMyProjectCharacter::MoveRight);
 
@@ -100,7 +101,7 @@ void AMyProjectCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Lo
 {
 		StopJumping();
 }
-
+/*
 void AMyProjectCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
 {
 	OnCrouch();
@@ -110,7 +111,7 @@ void AMyProjectCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Lo
 {
 	OnUncrouch();
 }
-
+*/
 void AMyProjectCharacter::TurnAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
@@ -150,4 +151,36 @@ void AMyProjectCharacter::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
 	}
+}
+
+// Called when the game starts or when spawned
+void AMyProjectCharacter::BeginPlay()
+{
+	currentHP = maxHP;
+	Super::BeginPlay();
+}
+
+void AMyProjectCharacter::LifeModifier(float amout)
+{
+	if (amout != 0)
+	{
+		if (amout > 0)
+		{
+			amout + currentHP = currentHP;
+		}
+		else 
+		{
+			amout - currentHP = currentHP;
+		}
+
+		if (currentHP <= 0) 
+		{
+			Death();
+		}
+	}
+}
+
+void AMyProjectCharacter::Death() 
+{
+
 }

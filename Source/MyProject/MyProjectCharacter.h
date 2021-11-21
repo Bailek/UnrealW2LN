@@ -20,7 +20,7 @@ class AMyProjectCharacter : public ACharacter
 	class UCameraComponent* FollowCamera;
 public:
 	AMyProjectCharacter();
-
+	
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseTurnRate;
@@ -28,6 +28,19 @@ public:
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
+
+	//Life PLayer
+	UPROPERTY(VisibleAnywhere)
+		float maxHP;
+	
+		float currentHP;
+
+	// fonction LifeModifier
+	void LifeModifier(float amout);
+
+private:
+
+	void Death();
 
 protected:
 
@@ -57,6 +70,9 @@ protected:
 
 	/** Handler for when a touch input stops. */
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
+
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 
 protected:
 	// APawn interface
