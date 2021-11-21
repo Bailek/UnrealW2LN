@@ -46,6 +46,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		UStaticMeshComponent* StaticMesh;
+
 	UPROPERTY(VisibleAnywhere)
 		UBoxComponent* TrigerBox;
 };

@@ -1,6 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "MyProjectCharacter.h"
+#include "Projectile.h"
+#include "DrawDebugHelpers.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -60,6 +62,8 @@ void AMyProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 
 	PlayerInputComponent->BindAction("Drag", IE_Pressed, this, &AMyProjectCharacter::PickUp);
 	PlayerInputComponent->BindAction("Drag", IE_Released, this, &AMyProjectCharacter::UnPickUp);
+
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AMyProjectCharacter::CreateProjectile);
 	/*
 	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &ACharacter::OnCrouch);
 	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &ACharacter::OnUncrouch);
@@ -159,40 +163,37 @@ void AMyProjectCharacter::MoveRight(float Value)
 // Called when the game starts or when spawned
 void AMyProjectCharacter::BeginPlay()
 {
-	currentHP = maxHP;
+	HP = 100;
 	Super::BeginPlay();
 }
 
 void AMyProjectCharacter::LifeModifier(float amout)
 {
-	if (amout != 0)
-	{
-		if (amout > 0)
-		{
-			currentHP = currentHP + amout;
-		}
-		else 
-		{
-			currentHP = currentHP + amout;
-		}
+	
+		HP = HP + amout;
+		
 
-		if (currentHP <= 0) 
+		if (HP <= 0)
 		{
 			Death();
 		}
-	}
+	
 }
 
 void AMyProjectCharacter::Death() 
 {
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetCollisionProfileName("Ragdoll");
 	GetController()->UnPossess();
-	Respawn();
+	APawn* Pawn = GetWorld()->SpawnActor<APawn>(AMyProjectCharacter::StaticClass(), FVector(-770, 370, 226), FRotator(0, 0, 0));
+	
+	//Respawn();
 }
 
 
 void AMyProjectCharacter::Respawn()
 {
-	GetWorld()->GetTimerManager().SetTimer(RespawnHandle, RespawnDele, 2.0f, false);
+	//GetWorld()->GetTimerManager().SetTimer(RespawnHandle, RespawnDele, 2.0f, false);
 	APawn* Pawn = GetWorld()->SpawnActor<APawn>(AMyProjectCharacter::StaticClass(), FVector(-770, 370, 226), FRotator(0,0,0));
 	GetController()->Possess(Pawn);
 }
@@ -204,27 +205,31 @@ void AMyProjectCharacter::PickUp()
 	FVector End = Start + (GetCapsuleComponent()->GetForwardVector() * 700.f);
 	FCollisionQueryParams CollisionParams;
 
-	GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, CollisionParams);
-
-	if (Hit.GetComponent()->Mobility == EComponentMobility::Movable)
+	
+	if (GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, CollisionParams))
 	{
-		DragObject = Hit.GetActor();
-		DragObject->AttachToComponent(GetCapsuleComponent(),FAttachmentTransformRules::KeepWorldTransform);
+		DrawDebugLine(GetWorld(), Start, End, FColor::Emerald, false, 1);
+		if (Hit.GetComponent()->Mobility == EComponentMobility::Movable)
+		{
+			
+			DragObject = Hit.GetActor();
+			DragObject->FindComponentByClass<UStaticMeshComponent>()->SetSimulatePhysics(false);
+			DragObject->AttachToComponent(GetCapsuleComponent(), FAttachmentTransformRules::KeepWorldTransform);
+		}
 	}
+	
 }
 void AMyProjectCharacter::UnPickUp()
 {
-	if (!DragObject) 
+	if (DragObject) 
 	{
+		DragObject->FindComponentByClass<UStaticMeshComponent>()->SetSimulatePhysics(true);
 		DragObject->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	}
 }
 void AMyProjectCharacter::CreateProjectile()
 {
-	//GetWorld()->SpawnActor<FSphere>(AProjectile, FVector(-770, 370, 226), FRotator(0, 0, 0));
+	GetWorld()->SpawnActor<AProjectile>(GetCapsuleComponent()->GetRelativeLocation(), FRotator(0,0,0));
 }
 
-void AMyProjectCharacter::Shooting()
-{
-	
-}
+

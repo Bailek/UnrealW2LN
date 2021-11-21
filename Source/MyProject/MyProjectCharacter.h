@@ -31,10 +31,8 @@ public:
 	float BaseLookUpRate;
 
 	//Life PLayer
-	UPROPERTY(VisibleAnywhere)
-		float maxHP = 100;
-	
-		float currentHP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float HP = 100;
 
 		AActor* DragObject;
 	// fonction LifeModifier
@@ -54,8 +52,6 @@ private:
 	void UnPickUp();
 
 	void CreateProjectile();
-
-	void Shooting();
 
 protected:
 
