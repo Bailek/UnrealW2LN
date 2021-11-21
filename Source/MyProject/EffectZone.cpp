@@ -44,7 +44,6 @@ void AEffectZone::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, clas
 	
 	if (Character == nullptr)
 		return;
-	AMyProjectCharacter* Player;
 	takeModifierLife(Character);
 }
 
@@ -54,9 +53,9 @@ void AEffectZone::takeModifierLife(class AActor* OtherActor)
 
 	if (Character == nullptr)
 		return;
-	AMyProjectCharacter* Player;
+	AMyProjectCharacter* Player = Cast<AMyProjectCharacter>(OtherActor);
 	Player->LifeModifier(amoutLifeModifier);
-	//delay 0,5 second = 500 ms
+	//delay 0,5 second = 500 ms GetWorldTimerManager().SetTimer(HarvestTimerHandle, this, &ACubeFarmBlock::Harvest, HarvestTime,false);
 
 	checkModifierLife(Character);
 }
@@ -67,7 +66,7 @@ void AEffectZone::checkModifierLife(class AActor* OtherActor)
 
 	if (Character == nullptr)
 		return;
-	AMyProjectCharacter* Player;
+	AMyProjectCharacter* Player = Cast<AMyProjectCharacter>(OtherActor);
 
 	if (Player->currentHP <= 0 || Player->currentHP == 100)
 	{

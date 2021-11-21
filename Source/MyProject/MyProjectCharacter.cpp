@@ -166,11 +166,11 @@ void AMyProjectCharacter::LifeModifier(float amout)
 	{
 		if (amout > 0)
 		{
-			amout + currentHP = currentHP;
+			currentHP = currentHP + amout;
 		}
 		else 
 		{
-			amout - currentHP = currentHP;
+			currentHP = currentHP + amout;
 		}
 
 		if (currentHP <= 0) 
