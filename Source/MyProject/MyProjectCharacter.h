@@ -35,6 +35,8 @@ public:
 		float HP = 100;
 
 		AActor* DragObject;
+
+		TSubclassOf<APawn> DefaultCharacter;
 	// fonction LifeModifier
 	void LifeModifier(float amout);
 

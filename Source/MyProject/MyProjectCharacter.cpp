@@ -48,6 +48,8 @@ AMyProjectCharacter::AMyProjectCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/ThirdPersonCPP/Blueprints/ThirdPersonCharacter"));
+	DefaultCharacter = PlayerPawnBPClass.Class;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -185,8 +187,8 @@ void AMyProjectCharacter::Death()
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetCollisionProfileName("Ragdoll");
 	GetController()->UnPossess();
-	APawn* Pawn = GetWorld()->SpawnActor<APawn>(AMyProjectCharacter::StaticClass(), FVector(-770, 370, 226), FRotator(0, 0, 0));
-	
+	APawn* Pawn = GetWorld()->SpawnActor<APawn>(DefaultCharacter, FVector(-770, 370, 226), FRotator(0, 0, 0));
+	GetController()->Possess(Pawn);
 	//Respawn();
 }
 
@@ -194,7 +196,7 @@ void AMyProjectCharacter::Death()
 void AMyProjectCharacter::Respawn()
 {
 	//GetWorld()->GetTimerManager().SetTimer(RespawnHandle, RespawnDele, 2.0f, false);
-	APawn* Pawn = GetWorld()->SpawnActor<APawn>(AMyProjectCharacter::StaticClass(), FVector(-770, 370, 226), FRotator(0,0,0));
+	APawn* Pawn = GetWorld()->SpawnActor<APawn>(DefaultCharacter, FVector(-770, 370, 226), FRotator(0,0,0));
 	GetController()->Possess(Pawn);
 }
 
@@ -229,7 +231,7 @@ void AMyProjectCharacter::UnPickUp()
 }
 void AMyProjectCharacter::CreateProjectile()
 {
-	GetWorld()->SpawnActor<AProjectile>(GetCapsuleComponent()->GetRelativeLocation(), FRotator(0,0,0));
+	GetWorld()->SpawnActor<AProjectile>(AProjectile::StaticClass(),GetCapsuleComponent()->GetRelativeLocation(), GetCapsuleComponent()->GetRelativeRotation());
 }
 
 
